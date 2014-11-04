@@ -1,3 +1,5 @@
+Ini/obj/
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
@@ -41,3 +43,10 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+*.pdb
+Ini/bin/Debug/Ini.vshost.exe.manifest
+Ini/bin/Debug/Ini.vshost.exe.config
+Ini/bin/Debug/Ini.vshost.exe
+Ini/bin/Debug/Ini.exe.config
+Ini.v11.suo
