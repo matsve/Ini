@@ -134,6 +134,11 @@ namespace System.Data.Ini
         {
             return _data.ContainsKey(section) ? _data[section] : new Dictionary<string, string>();
         }
+
+        public IEnumerable<Dictionary<string, string>> GetIterativeSections(string section)
+        {
+            return _data.Where(sect => sect.Key.Contains("#") && sect.Key.Length > section.Length && sect.Key.Substring(0, section.Length) == section).Select(s => s.Value);
+        }
         private void Parse()
         {
             string currentSection = "", currentProperty = "", currentValue = "";
@@ -195,7 +200,7 @@ namespace System.Data.Ini
                         {
                             indstring = true;
                         }
-                        else if (chr == "#" || chr == ";")
+                        else if (chr == "#" || chr == ";" && !insection)
                         {
                             comment = true;
                         }
@@ -271,6 +276,10 @@ namespace System.Data.Ini
         public static bool ToBool(this string input)
         {
             return (input.ToLower() == "true" || input.ToLower() == "yes");
+        }
+        public static string Get(this Dictionary<string, string> dictionary, string key, string defaultValue = "")
+        {
+            return dictionary.ContainsKey(key) ? dictionary[key] : defaultValue;
         }
         public static string PathFromUrl(string url)
         {
