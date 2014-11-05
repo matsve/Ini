@@ -16,7 +16,7 @@ namespace Ini
         {
             var ini = new System.Data.Ini.Ini();
             Console.WriteLine("Welcome to the Ini test program!");
-            ini.SetString("main", "asd", "asg");
+            /*ini.SetString("main", "asd", "asg");
             ini.SetInt("main", "prop", 12);
             ini.SetFloat("main", "propf", 213.1f);
             ini.SetBool("ab", "bval", false);
@@ -26,6 +26,8 @@ namespace Ini
             ini.SetString("loop#2", "key", "value2");
             ini.SetString("loop#3", "key", "value3");
             ini.SetString("loop#4", "key", "value4");
+
+            ini.SetDataBlock("sample data", new List<string> {"line 1", "line 2", "line 3"});
 
             Console.Write("Loop[");
             foreach (var section in ini.GetIterativeSections("loop"))
@@ -41,7 +43,9 @@ namespace Ini
             Console.WriteLine("]");
 
             ini.Report();
-            ini.SaveAs("sample.ini");
+            ini.SaveAs("sample.ini");*/
+            ini.ReadFile("sample.ini");
+            ini.Report();
             Console.ReadKey();
         }
     }

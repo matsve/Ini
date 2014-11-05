@@ -66,13 +66,23 @@ namespace System.Data.Ini
                 output = Console.Out;
                 output.WriteLine(" --- Reporting contents of ini object: --- ");
             }
-            foreach (KeyValuePair<string, Dictionary<string, string>> section in _data)
+            foreach (var section in _data)
             {
                 output.WriteLine("[" + section.Key + "]");
-                foreach (KeyValuePair<string, string> property in section.Value)
+                foreach (var property in section.Value)
                 {
                     output.WriteLine(property.Key + " = " + property.Value);
                 }
+                output.WriteLine();
+            }
+            foreach (var section in _dataBlocks)
+            {
+                output.WriteLine("[@"+section.Key+"]");
+                foreach (var line in section.Value)
+                {
+                    output.WriteLine(line);
+                }
+                output.WriteLine("[/]");
                 output.WriteLine();
             }
         }
@@ -134,7 +144,14 @@ namespace System.Data.Ini
         {
             return _data.ContainsKey(section) ? _data[section] : new Dictionary<string, string>();
         }
-
+        public List<string> GetDataBlock(string section)
+        {
+            return _dataBlocks.ContainsKey(section) ? _dataBlocks[section] : new List<string>();
+        }
+        public void SetDataBlock(string section, List<string> data)
+        {
+            _dataBlocks[section] = data;
+        }
         public IEnumerable<Dictionary<string, string>> GetIterativeSections(string section)
         {
             return _data.Where(sect => sect.Key.Contains("#") && sect.Key.Length > section.Length && sect.Key.Substring(0, section.Length) == section).Select(s => s.Value);
@@ -156,7 +173,6 @@ namespace System.Data.Ini
                     }
                     else
                     {
-                        Console.WriteLine(currentSection.Substring(1) + " > " + line);
                         _dataBlocks[currentSection.Substring(1)].Add(line);
                     }
                 }
@@ -200,7 +216,7 @@ namespace System.Data.Ini
                         {
                             indstring = true;
                         }
-                        else if (chr == "#" || chr == ";" && !insection)
+                        else if (!insection && (chr == "#" || chr == ";"))
                         {
                             comment = true;
                         }
@@ -217,12 +233,13 @@ namespace System.Data.Ini
                             if (currentSection.Substring(0, 1) == "@")
                             {
                                 datablock = true;
-                                _dataBlocks[currentSection].Clear();
+                                _dataBlocks[currentSection.Substring(1)] = new List<string>();
                             }
                         }
                         else if (gotsection && !gotproperty && (chr == "=" || chr == ":"))
                         {
                             gotproperty = true;
+                            currentProperty = currentProperty.Trim();
                         }
                         else
                         {
