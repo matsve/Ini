@@ -19,6 +19,7 @@ namespace Ini
             ini.SetBool("ab", "bval", false);
             ini.SetBool("ab", "bvalt", true);
             ini.Report();
+            ini.SaveAs("sample.ini");
             Console.ReadKey();
         }
     }

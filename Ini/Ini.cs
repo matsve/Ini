@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
+
+// TODO: Variables
+// TODO: Enumerable sections
 
 // ReSharper disable once CheckNamespace
 namespace System.Data.Ini
@@ -12,11 +16,13 @@ namespace System.Data.Ini
         private List<string> _buffer = new List<string>();
         private Dictionary<string, Dictionary<string, string>> _data = new Dictionary<string, Dictionary<string, string>>();
         private Dictionary<string, List<string>> _dataBlocks = new Dictionary<string, List<string>>();
+        private string Path { get; set; }
 
         public Ini()
         {
+            Path = null;
         }
-        public Ini(string fileName)
+        public Ini(string fileName) : this()
         {
             ReadFile(fileName);
         }
@@ -27,9 +33,10 @@ namespace System.Data.Ini
             return AppendFile(fileName);
         }
 
+
         public bool AppendFile(string fileName)
         {
-            string[] lines = System.IO.File.ReadAllLines(fileName, System.Text.Encoding.Default);
+            string[] lines = File.ReadAllLines(fileName, Encoding.Default);
             foreach (string line in lines)
             {
                 _buffer.Add(line);
@@ -38,9 +45,36 @@ namespace System.Data.Ini
             return false;
         }
 
+        /// <summary>
+        /// Writes the current ini data to a file on disk
+        /// </summary>
+        /// <param name="fileName">Path to the file</param>
+        /// <returns></returns>
         public bool SaveAs(string fileName)
         {
+            using (TextWriter file = File.CreateText(fileName))
+            {
+                Report(file);
+                file.Close();
+            }
             return false;
+        }
+        public void Report(TextWriter output = null)
+        {
+            if (output == null)
+            {
+                output = Console.Out;
+                output.WriteLine(" --- Reporting contents of ini object: --- ");
+            }
+            foreach (KeyValuePair<string, Dictionary<string, string>> section in _data)
+            {
+                output.WriteLine("[" + section.Key + "]");
+                foreach (KeyValuePair<string, string> property in section.Value)
+                {
+                    output.WriteLine(property.Key + " = " + property.Value);
+                }
+                output.WriteLine();
+            }
         }
 
         public string GetString(string section, string property, string defval = null)
@@ -100,19 +134,6 @@ namespace System.Data.Ini
         {
             return _data.ContainsKey(section) ? _data[section] : new Dictionary<string, string>();
         }
-        public void Report()
-        {
-            Console.WriteLine(" --- Reporting contents of ini object: --- ");
-            foreach (KeyValuePair<string, Dictionary<string, string>> section in _data)
-            {
-                Console.WriteLine("[" + section.Key + "]");
-                foreach (KeyValuePair<string, string> property in section.Value)
-                {
-                    Console.WriteLine(property.Key + " = " + property.Value);
-                }
-                Console.WriteLine();
-            }
-        }
         private void Parse()
         {
             string currentSection = "", currentProperty = "", currentValue = "";
@@ -130,7 +151,7 @@ namespace System.Data.Ini
                     }
                     else
                     {
-                        System.Console.WriteLine(currentSection.Substring(1) + " > " + line);
+                        Console.WriteLine(currentSection.Substring(1) + " > " + line);
                         _dataBlocks[currentSection.Substring(1)].Add(line);
                     }
                 }
@@ -206,11 +227,11 @@ namespace System.Data.Ini
                                 {
                                     currentSection += chr;
                                 }
-                                else if (gotsection && !gotproperty)
+                                else if (/*gotsection && */!gotproperty)
                                 {
                                     currentProperty += chr;
                                 }
-                                else if (gotsection && gotproperty)
+                                else //if (gotsection && gotproperty)
                                 {
                                     currentValue += chr;
                                 }
@@ -232,8 +253,6 @@ namespace System.Data.Ini
                 currentProperty = "";
                 currentValue = "";
             }
-
-            return;
         }
     }
 
