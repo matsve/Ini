@@ -20,7 +20,8 @@ namespace Ini
             ini.ReadLines(new List<string>
             {
                 "[block]",
-                "key: value"
+                "key: value",
+                "key2: '   \' val'"
             });
             ini.Report();
 

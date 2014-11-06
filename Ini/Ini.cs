@@ -100,7 +100,7 @@ namespace System.Data.Ini
                 output.WriteLine("[" + section.Key + "]");
                 foreach (var property in section.Value)
                 {
-                    output.WriteLine(property.Key + " = " + property.Value);
+                    output.WriteLine(property.Key + " = " + (property.Value.Contains(" ") || property.Value.Contains("\t") ? "'" + property.Value.Replace("\"", "\\\"").Replace("'", "\\'") + "'" : property.Value));
                 }
                 output.WriteLine();
             }
@@ -120,33 +120,21 @@ namespace System.Data.Ini
         {
             if (_data.ContainsKey(section) && _data[section].ContainsKey(property))
             {
-                return _data[section][property];
+                return PostProcess ? PostProcessor(_data[section][property]) : _data[section][property];
             }
             return defval;
         }
         public int GetInt(string section, string property, int defval = 0)
         {
-            if (_data.ContainsKey(section) && _data[section].ContainsKey(property))
-            {
-                return _data[section][property].ToInt();
-            }
-            return defval;
+            return GetString(section, property, defval.ToString()).ToInt();
         }
         public float GetFloat(string section, string property, float defval = 0.0f)
         {
-            if (_data.ContainsKey(section) && _data[section].ContainsKey(property))
-            {
-                return _data[section][property].ToFloat();
-            }
-            return defval;
+            return GetString(section, property, defval.ToString(CultureInfo.InvariantCulture)).ToFloat();
         }
         public bool GetBool(string section, string property, bool defval = false)
         {
-            if (_data.ContainsKey(section) && _data[section].ContainsKey(property))
-            {
-                return _data[section][property].ToBool();
-            }
-            return defval;
+            return GetString(section, property, defval.ToString()).ToBool();
         }
 
         public void SetString(string section, string property, string value)
@@ -268,7 +256,7 @@ namespace System.Data.Ini
                         else if (gotsection && !gotproperty && (chr == "=" || chr == ":"))
                         {
                             gotproperty = true;
-                            currentProperty = currentProperty.Trim();
+                            //currentProperty = currentProperty.Trim();
                         }
                         else
                         {
@@ -284,6 +272,9 @@ namespace System.Data.Ini
                                 }
                                 else //if (gotsection && gotproperty)
                                 {
+                                    if (currentValue.Length == 0 && (chr == " " || chr == "\t"))
+                                    {
+                                    } else
                                     currentValue += chr;
                                 }
                             }
@@ -297,7 +288,7 @@ namespace System.Data.Ini
                 if (gotsection && gotproperty)
                 {
                     if (!_data.ContainsKey(currentSection)) _data.Add(currentSection, new Dictionary<string, string>());
-                    _data[currentSection][currentProperty] = PostProcess ? PostProcessor(currentValue) : currentValue;
+                    _data[currentSection][currentProperty] = currentValue;
                 }
                 comment = false;
                 gotproperty = false;
