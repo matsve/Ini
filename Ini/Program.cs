@@ -16,6 +16,14 @@ namespace Ini
         {
             var ini = new System.Data.Ini.Ini();
             Console.WriteLine("Welcome to the Ini test program!");
+            ini.PostProcess = true;
+            ini.ReadLines(new List<string>
+            {
+                "[block]",
+                "key: value"
+            });
+            ini.Report();
+
             /*ini.SetString("main", "asd", "asg");
             ini.SetInt("main", "prop", 12);
             ini.SetFloat("main", "propf", 213.1f);
@@ -44,8 +52,8 @@ namespace Ini
 
             ini.Report();
             ini.SaveAs("sample.ini");*/
-            ini.ReadFile("sample.ini");
-            ini.Report();
+            //ini.ReadFile("sample.ini");
+            //ini.Report();
             Console.ReadKey();
         }
     }

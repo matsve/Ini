@@ -1,30 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 // TODO: Variables
-// TODO: Enumerable sections
+// TODO: Expressions
 
-// ReSharper disable once CheckNamespace
 namespace System.Data.Ini
 {
     public class Ini
     {
-        private List<string> _buffer = new List<string>();
-        private Dictionary<string, Dictionary<string, string>> _data = new Dictionary<string, Dictionary<string, string>>();
-        private Dictionary<string, List<string>> _dataBlocks = new Dictionary<string, List<string>>();
+        private readonly List<string> _buffer = new List<string>();
+        private readonly Dictionary<string, Dictionary<string, string>> _data = new Dictionary<string, Dictionary<string, string>>();
+        private readonly Dictionary<string, List<string>> _dataBlocks = new Dictionary<string, List<string>>();
+        private readonly Dictionary<string, string> _variables = new Dictionary<string, string>();
         private string Path { get; set; }
+        public bool PostProcess { get; set; }
 
         public Ini()
         {
             Path = null;
+            PostProcess = false;
         }
         public Ini(string fileName) : this()
         {
             ReadFile(fileName);
+        }
+
+        public void Clear(bool clearVariables = true)
+        {
+            _buffer.Clear();
+            _data.Clear();
+            _dataBlocks.Clear();
+            if (clearVariables) _variables.Clear();
         }
 
         public bool ReadFile(string fileName)
@@ -33,16 +43,35 @@ namespace System.Data.Ini
             return AppendFile(fileName);
         }
 
-
         public bool AppendFile(string fileName)
         {
-            string[] lines = File.ReadAllLines(fileName, Encoding.Default);
-            foreach (string line in lines)
+            try
             {
-                _buffer.Add(line);
+                var lines = File.ReadAllLines(fileName, Encoding.Default);
+                foreach (var line in lines)
+                {
+                    _buffer.Add(line);
+                }
+                Parse();
             }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool ReadLines(IEnumerable<string> lines)
+        {
+            _buffer.Clear();
+            return AppendLines(lines);
+        }
+
+        public bool AppendLines(IEnumerable<string> lines)
+        {
+            _buffer.AddRange(lines);
             Parse();
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -268,13 +297,18 @@ namespace System.Data.Ini
                 if (gotsection && gotproperty)
                 {
                     if (!_data.ContainsKey(currentSection)) _data.Add(currentSection, new Dictionary<string, string>());
-                    _data[currentSection][currentProperty] = currentValue;
+                    _data[currentSection][currentProperty] = PostProcess ? PostProcessor(currentValue) : currentValue;
                 }
                 comment = false;
                 gotproperty = false;
                 currentProperty = "";
                 currentValue = "";
             }
+        }
+
+        private string PostProcessor(string input)
+        {
+            return input;
         }
     }
 
