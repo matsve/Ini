@@ -21,7 +21,11 @@ namespace Ini
             {
                 "[block]",
                 "key: value",
-                "key2: '   \' val'"
+                "key2: '   \\\'val'",
+                "key3: value",
+                "",
+                "[block2]",
+                "k=v"
             });
             ini.Report();
 

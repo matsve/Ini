@@ -176,7 +176,7 @@ namespace System.Data.Ini
         private void Parse()
         {
             string currentSection = "", currentProperty = "", currentValue = "";
-            bool comment = false, instring = false, indstring = false, gotsection = false, gotproperty = false, insection = false, datablock = false;
+            bool comment = false, instring = false, indstring = false, gotsection = false, gotproperty = false, insection = false, datablock = false, escape = false;
 
             foreach (var line in _buffer)
             {
@@ -201,7 +201,16 @@ namespace System.Data.Ini
 
                         if (instring)
                         {
-                            if (chr == "'")
+                            if (escape)
+                            {
+                                escape = false;
+                                currentValue += chr;
+                            }
+                            else if (chr == "\\")
+                            {
+                                escape = true;
+                            }
+                            else if (chr == "'")
                             {
                                 instring = false;
                             }
@@ -212,7 +221,16 @@ namespace System.Data.Ini
                         }
                         else if (indstring)
                         {
-                            if (chr == "\"")
+                            if (escape)
+                            {
+                                escape = false;
+                                currentValue += chr;
+                            }
+                            else if (chr == "\\")
+                            {
+                                escape = true;
+                            }
+                            else if (chr == "\"")
                             {
                                 indstring = false;
                             }
