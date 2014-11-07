@@ -288,7 +288,7 @@ namespace System.Data.Ini
                 if (gotsection && gotproperty)
                 {
                     if (!_data.ContainsKey(currentSection)) _data.Add(currentSection, new Dictionary<string, string>());
-                    _data[currentSection][currentProperty] = currentValue;
+                    _data[currentSection][currentProperty.Trim()] = currentValue;
                 }
                 comment = false;
                 gotproperty = false;
@@ -322,6 +322,10 @@ namespace System.Data.Ini
         public static string Get(this Dictionary<string, string> dictionary, string key, string defaultValue = "")
         {
             return dictionary.ContainsKey(key) ? dictionary[key] : defaultValue;
+        }
+        public static Dictionary<string, string> GetIterativeProperties(this Dictionary<string, string> dict, string property)
+        {
+            return dict.Where(prop => prop.Key.Contains("-") && prop.Key.Length > property.Length && prop.Key.Substring(0, property.Length) == property).ToDictionary(prop => prop.Key, prop => prop.Value);
         }
         public static string PathFromUrl(string url)
         {
