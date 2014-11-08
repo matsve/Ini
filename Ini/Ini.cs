@@ -10,6 +10,11 @@ using System.Text;
 
 namespace System.Data.Ini
 {
+    public enum Separator
+    {
+        Equals, Colon, EqualsReadable, ColonReadable
+    }
+
     public class Ini
     {
         private readonly List<string> _buffer = new List<string>();
@@ -83,24 +88,40 @@ namespace System.Data.Ini
         {
             using (TextWriter file = File.CreateText(fileName))
             {
-                Report(file);
+                Report(output: file);
                 file.Close();
             }
             return false;
         }
-        public void Report(TextWriter output = null)
+        public void Report(Separator separator = Separator.EqualsReadable, TextWriter output = null)
         {
             if (output == null)
             {
                 output = Console.Out;
                 output.WriteLine(" --- Reporting contents of ini object: --- ");
             }
+            var sep = "";
+            switch (separator)
+            {
+                case Separator.Equals:
+                    sep = "=";
+                    break;
+                case Separator.EqualsReadable:
+                    sep = " = ";
+                    break;
+                case Separator.Colon:
+                    sep = ":";
+                    break;
+                case Separator.ColonReadable:
+                    sep = ": ";
+                    break;
+            }
             foreach (var section in _data)
             {
                 output.WriteLine("[" + section.Key + "]");
                 foreach (var property in section.Value)
                 {
-                    output.WriteLine(property.Key + " = " + (property.Value.Contains(" ") || property.Value.Contains("\t") ? "'" + property.Value.Replace("\"", "\\\"").Replace("'", "\\'") + "'" : property.Value));
+                    output.WriteLine(property.Key + sep + (property.Value.Contains(" ") || property.Value.Contains("\t") ? "'" + property.Value.Replace("\"", "\\\"").Replace("'", "\\'") + "'" : property.Value));
                 }
                 output.WriteLine();
             }

@@ -21,13 +21,15 @@ namespace Ini
             {
                 "[block]",
                 "key: value",
-                "key2: '   \\\'val'",
+                "key2: '   \\\'valul'",
                 "key3: value",
                 "",
                 "[block2]",
-                "k=v"
+                "k: v",
+                "key : val",
+                "keya =      'escape \\\\ string'"
             });
-            ini.Report();
+            ini.Report(Separator.ColonReadable);
 
             /*ini.SetString("main", "asd", "asg");
             ini.SetInt("main", "prop", 12);
