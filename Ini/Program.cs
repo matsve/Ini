@@ -27,8 +27,15 @@ namespace Ini
                 "[block2]",
                 "k: v",
                 "key : val",
-                "keya =      'escape \\\\ string'"
+                "keya =      'escape \\\\ string'",
+                "",
+                "[@Data block]",
+                "[block3]",
+                "ky: 'This is not read directly'",
+                "il: 'But it will eventually'",
+                "[/]"
             });
+            ini.ReadLines(ini.GetDataBlock("Data block"));
             ini.Report(Separator.ColonReadable);
 
             /*ini.SetString("main", "asd", "asg");

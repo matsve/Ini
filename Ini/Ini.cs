@@ -299,9 +299,9 @@ namespace System.Data.Ini
                         }
                         else
                         {
-                            if (chr != " " && chr != "\t")
+                            if ((chr != " " && chr != "\t") || !gotsection)
                             {
-                                if (!gotsection)
+                                if (!gotsection && chr != "\t")
                                 {
                                     currentSection += chr;
                                 }
