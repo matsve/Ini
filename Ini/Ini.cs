@@ -108,11 +108,11 @@ namespace System.Data.Ini
         /// </summary>
         /// <param name="fileName">Path to the file</param>
         /// <returns></returns>
-        public bool SaveAs(string fileName)
+		public bool SaveAs(string fileName, Separator separator = Separator.EqualsReadable)
         {
             using (TextWriter file = File.CreateText(fileName))
             {
-                Report(output: file);
+				Report(output: file, separator: separator);
                 file.Close();
             }
             return false;
