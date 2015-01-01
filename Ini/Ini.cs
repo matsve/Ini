@@ -161,6 +161,14 @@ namespace System.Data.Ini
             }
         }
 
+        public bool HasSection(string section) {
+            return _data.ContainsKey(section);
+        }
+        public bool HasProperty(string section, string property) {
+            if (HasSection(section)) {
+                return _data[section].ContainsKey(property);
+            } else return false;
+        }
         public string GetString(string section, string property, string defval = null)
         {
             if (_data.ContainsKey(section) && _data[section].ContainsKey(property))
