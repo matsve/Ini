@@ -36,6 +36,8 @@ namespace Ini
                 "[/]"
             });
             ini.ReadLines(ini.GetDataBlock("Data block"));
+			ini.DeleteProperty ("block3", "ky");
+			ini.DeleteSection ("block2");
             ini.Report(Separator.ColonReadable);
 
             /*ini.SetString("main", "asd", "asg");

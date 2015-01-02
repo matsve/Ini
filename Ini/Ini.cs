@@ -169,6 +169,14 @@ namespace System.Data.Ini
                 return _data[section].ContainsKey(property);
             } else return false;
         }
+		public void DeleteSection(string section) {
+			_data.Remove (section);
+		}
+		public void DeleteProperty(string section, string property) {
+			if (HasSection (section)) {
+				_data [section].Remove (property);
+			}
+		}
         public string GetString(string section, string property, string defval = null)
         {
             if (_data.ContainsKey(section) && _data[section].ContainsKey(property))
