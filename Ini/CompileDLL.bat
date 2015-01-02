@@ -1,0 +1,1 @@
+csc.exe /target:library /out:Ini.dll /optimize ini.cs
