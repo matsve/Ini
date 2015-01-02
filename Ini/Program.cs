@@ -40,6 +40,10 @@ namespace Ini
 			ini.DeleteSection ("block2");
             ini.Report(Separator.ColonReadable);
 
+			var ini2 = new System.Data.Ini.Ini ("Sample.ini");
+			ini2.SetString ("Sample", "data", "value");
+			ini2.Save ();
+
             /*ini.SetString("main", "asd", "asg");
             ini.SetInt("main", "prop", 12);
             ini.SetFloat("main", "propf", 213.1f);

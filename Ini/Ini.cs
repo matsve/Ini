@@ -55,6 +55,7 @@ namespace System.Data.Ini
         }
         public Ini(string fileName) : this()
         {
+			Path = fileName;
             ReadFile(fileName);
         }
 
@@ -69,6 +70,7 @@ namespace System.Data.Ini
         public bool ReadFile(string fileName)
         {
             _buffer.Clear();
+			Path = fileName;
             return AppendFile(fileName);
         }
 
@@ -103,6 +105,12 @@ namespace System.Data.Ini
             return true;
         }
 
+		public bool Save(Separator separator = Separator.EqualsReadable) {
+			if (Path != null) {
+				return SaveAs (Path, separator);
+			}
+			return false;
+		}
         /// <summary>
         /// Writes the current ini data to a file on disk
         /// </summary>
@@ -114,8 +122,9 @@ namespace System.Data.Ini
             {
 				Report(output: file, separator: separator);
                 file.Close();
+				return true;
             }
-            return false;
+            //return false;
         }
         public void Report(Separator separator = Separator.EqualsReadable, TextWriter output = null)
         {
