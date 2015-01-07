@@ -55,7 +55,6 @@ namespace System.Data.Ini
         }
         public Ini(string fileName) : this()
         {
-			Path = fileName;
             ReadFile(fileName);
         }
 
@@ -405,7 +404,7 @@ namespace System.Data.Ini
         }
         public static bool ToBool(this string input)
         {
-            return (input.ToLower() == "true" || input.ToLower() == "yes");
+			return (input.ToLower() == "true" || input.ToLower() == "yes" || input.ToLower() == "on");
         }
         public static string Get(this Dictionary<string, string> dictionary, string key, string defaultValue = "")
         {
