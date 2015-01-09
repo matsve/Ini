@@ -28,6 +28,14 @@ namespace Ini
                 "k: v",
                 "key : val",
                 "keya =      'escape \\\\ string'",
+				"",
+				"[bools]",
+				"v1 = yes",
+				"v2 = off",
+				"v3 = false",
+				"v4 = on",
+				"v5 = true",
+				"v6 = no",
                 "",
                 "[@Data block]",
                 "[block3]",
@@ -38,7 +46,7 @@ namespace Ini
             ini.ReadLines(ini.GetDataBlock("Data block"));
 			ini.DeleteProperty ("block3", "ky");
 			ini.DeleteSection ("block2");
-            ini.Report(Separator.ColonReadable);
+			ini.Report(Separator.ColonReadable, booleanStyle: BooleanStyle.YesNo);
 
 			var ini2 = new System.Data.Ini.Ini ("Sample.ini");
 			ini2.SetString ("Sample", "data", "value");

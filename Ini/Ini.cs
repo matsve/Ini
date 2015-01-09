@@ -38,6 +38,9 @@ namespace System.Data.Ini
     {
         Equals, Colon, EqualsReadable, ColonReadable
     }
+    public enum BooleanStyle {
+        TrueFalse, OnOff, YesNo
+    }
 
     public class Ini
     {
@@ -104,9 +107,9 @@ namespace System.Data.Ini
             return true;
         }
 
-		public bool Save(Separator separator = Separator.EqualsReadable) {
+		public bool Save(Separator separator = Separator.EqualsReadable, BooleanStyle booleanStyle = BooleanStyle.TrueFalse) {
 			if (Path != null) {
-				return SaveAs (Path, separator);
+				return SaveAs (Path, separator, booleanStyle);
 			}
 			return false;
 		}
@@ -115,7 +118,7 @@ namespace System.Data.Ini
         /// </summary>
         /// <param name="fileName">Path to the file</param>
         /// <returns></returns>
-		public bool SaveAs(string fileName, Separator separator = Separator.EqualsReadable)
+		public bool SaveAs(string fileName, Separator separator = Separator.EqualsReadable, BooleanStyle booleanStyle = BooleanStyle.TrueFalse)
         {
             using (TextWriter file = File.CreateText(fileName))
             {
@@ -125,7 +128,7 @@ namespace System.Data.Ini
             }
             //return false;
         }
-        public void Report(Separator separator = Separator.EqualsReadable, TextWriter output = null)
+        public void Report(Separator separator = Separator.EqualsReadable, TextWriter output = null, BooleanStyle booleanStyle = BooleanStyle.TrueFalse)
         {
             if (output == null)
             {
@@ -153,7 +156,11 @@ namespace System.Data.Ini
                 output.WriteLine("[" + section.Key + "]");
                 foreach (var property in section.Value)
                 {
-                    output.WriteLine(property.Key + sep + (property.Value.Contains(" ") || property.Value.Contains("\t") ? "'" + property.Value.Replace("\"", "\\\"").Replace("'", "\\'") + "'" : property.Value));
+                    if (property.Value.IsBool()) {
+						output.WriteLine(property.Key + sep + property.Value.ToBoolString(booleanStyle));
+                    } else {
+                        output.WriteLine(property.Key + sep + (property.Value.Contains(" ") || property.Value.Contains("\t") ? "'" + property.Value.Replace("\"", "\\\"").Replace("'", "\\'") + "'" : property.Value));
+                    }
                 }
                 output.WriteLine();
             }
@@ -392,6 +399,11 @@ namespace System.Data.Ini
 
     public static class IniUtils
     {
+        public static bool IsBool(this string input) {
+            string lc = input.ToLower();
+            if (lc == "true" || lc == "false" || lc == "on" || lc == "off" || lc == "yes" || lc == "no") return true;
+            else return false;
+        }
         public static int ToInt(this string input)
         {
             int output;
@@ -405,6 +417,17 @@ namespace System.Data.Ini
         public static bool ToBool(this string input)
         {
 			return (input.ToLower() == "true" || input.ToLower() == "yes" || input.ToLower() == "on");
+        }
+        public static string ToBoolString(this string input, BooleanStyle style = BooleanStyle.TrueFalse) {
+            if (input.ToBool()) {
+                if (style == BooleanStyle.OnOff) return "on";
+                else if (style == BooleanStyle.YesNo) return "yes";
+                else return "true";
+            } else {
+                if (style == BooleanStyle.OnOff) return "off";
+                else if (style == BooleanStyle.YesNo) return "no";
+                else return "false";
+            }
         }
         public static string Get(this Dictionary<string, string> dictionary, string key, string defaultValue = "")
         {
