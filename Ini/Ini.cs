@@ -29,7 +29,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
-// TODO: Variables
 // TODO: Expressions
 
 namespace System.Data.Ini
@@ -393,7 +392,11 @@ namespace System.Data.Ini
 
         private string PostProcessor(string input)
         {
-            return input;
+			if (input.Length > 1 && input.Substring (0, 1) == "$") {
+				return GetString(".vars", input.Substring (1), input.Substring(1));
+			} else {
+				return input;
+			}
         }
     }
 

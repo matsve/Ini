@@ -19,10 +19,17 @@ namespace Ini
             ini.PostProcess = true;
             ini.ReadLines(new List<string>
             {
+				"[.vars]",
+				"var = 3",
+				"",
+				"[yblock]",
+				"a=b",
+				"",
                 "[block]",
                 "key: value",
                 "key2: '   \\\'valul'",
                 "key3: value",
+				"key 4: $var",
                 "",
                 "[block2]",
                 "k: v",
@@ -47,6 +54,7 @@ namespace Ini
 			ini.DeleteProperty ("block3", "ky");
 			ini.DeleteSection ("block2");
 			ini.Report(Separator.ColonReadable, booleanStyle: BooleanStyle.YesNo);
+			System.Console.WriteLine ("Contents of block/key 4: '"+ini.GetString("block", "key 4")+"'");
 
 			var ini2 = new System.Data.Ini.Ini ("Sample.ini");
 			ini2.SetString ("Sample", "data", "value");
