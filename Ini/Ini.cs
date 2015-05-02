@@ -119,7 +119,8 @@ namespace System.Data.Ini
         /// <returns></returns>
 		public bool SaveAs(string fileName, Separator separator = Separator.EqualsReadable, BooleanStyle booleanStyle = BooleanStyle.TrueFalse)
         {
-            using (TextWriter file = File.CreateText(fileName))
+			using (StreamWriter file = new StreamWriter(fileName, false, Encoding.UTF8))
+            //using (TextWriter file = File.CreateText(fileName))
             {
 				Report(output: file, separator: separator);
                 file.Close();
